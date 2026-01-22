@@ -1,0 +1,10 @@
+langchain
+langgraph
+langchain-openai
+gradio
+pymupdf4llm
+semanticscholar
+python-dotenv
+openai
+pydantic
+

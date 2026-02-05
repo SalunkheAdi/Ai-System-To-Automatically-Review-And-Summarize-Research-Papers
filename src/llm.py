@@ -3,14 +3,19 @@ from langchain_openai import ChatOpenAI
 
 def get_llm(temperature: float = 0.3):
     """
-    Returns an LLM instance using OpenAI.
-    Requires OPENAI_API_KEY to be set in the environment.
+    Returns an LLM instance using SambaNova API.
+    Requires SAMBANOVA_API_KEY to be set in the environment.
     """
-    openai_key = os.getenv("OPENAI_API_KEY")
-    if not openai_key:
-        print("Warning: OPENAI_API_KEY not found in environment variables.")
-        # We might want to raise an error or just let ChatOpenAI handle missing key (it will raise ValidationError)
+    sambanova_key = os.getenv("SAMBANOVA_API_KEY")
+    if not sambanova_key:
+        print("Warning: SAMBANOVA_API_KEY not found in environment variables.")
     
-    # Using gpt-4o-mini as requested
-    print("Using OpenAI GPT-4o-mini model.")
-    return ChatOpenAI(model="gpt-4o-mini", temperature=temperature)
+    # Using SambaNova API with Llama model
+    print("Using SambaNova API.")
+    return ChatOpenAI(
+        model="Meta-Llama-3.1-8B-Instruct",
+        api_key=sambanova_key,
+        base_url="https://api.sambanova.ai/v1",
+        temperature=temperature,
+        max_tokens=500
+    )

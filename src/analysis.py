@@ -12,46 +12,40 @@ def analyze_paper(paper_text: str, paper_title: str) -> str:
     llm = get_llm(temperature=0)
     
     prompt = ChatPromptTemplate.from_messages([
-        ("system", "You are an expert research assistant. Analyze the following research paper text."),
-        ("user", "Title: {title}\n\nText:\n{text}\n\nPlease identify:\n1. Key Findings\n2. Methodology\n3. Results\n4. Limitations\n\nProvide a concise analysis.")
+        ("system", "Analyze briefly."),
+        ("user", "{text}")
     ])
     
     try:
-        # Truncate text if too long to fit context window
-        safe_text = paper_text[:30000]
-        # Format the prompt
-        formatted_prompt = prompt.invoke({"title": paper_title, "text": safe_text})
-        # Invoke LLM directly
+        # Ultra-aggressive truncation for speed and credits
+        safe_text = paper_text[:3000]
+        formatted_prompt = prompt.invoke({"text": safe_text})
         response = llm.invoke(formatted_prompt)
         return response.content
     except Exception as e:
-        return f"Error analyzing paper: {e}"
+        return f"Error: {e}"
 
 def synthesize_findings(analyses: List[Dict[str, str]]) -> str:
     """
     Synthesizes analyses from multiple papers to find common themes and contrasts.
-    Input: List of dicts, each containing 'title' and 'analysis'.
     """
     llm = get_llm(temperature=0)
     
-    start_str = "Synthesize the following research analyses into a cohesive summary of themes, agreements, and contradictions:\n\n"
     content_str = ""
-    for item in analyses:
-        content_str += f"--- Paper: {item['title']} ---\n{item['analysis']}\n\n"
+    for item in analyses[:2]:  # Only top 2 papers
+        content_str += f"{item['title']}: {item['analysis'][:200]}\n"
     
     prompt = ChatPromptTemplate.from_messages([
-        ("system", "You are a senior researcher conducting a systematic review."),
-        ("user", "{intro}{content}")
+        ("system", "Summarize."),
+        ("user", "{content}")
     ])
     
     try:
-        # Format the prompt
-        formatted_prompt = prompt.invoke({"intro": start_str, "content": content_str})
-        # Invoke LLM directly
+        formatted_prompt = prompt.invoke({"content": content_str})
         response = llm.invoke(formatted_prompt)
         return response.content
     except Exception as e:
-        return f"Error synthesizing findings: {e}"
+        return f"Error: {e}"
 
 import concurrent.futures
 

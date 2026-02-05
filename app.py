@@ -125,13 +125,13 @@ def check_startup():
     from langchain_openai import ChatOpenAI
 
     # Check keys
-    openai_key = os.getenv("OPENAI_API_KEY")
+    sambanova_key = os.getenv("SAMBANOVA_API_KEY")
     sem_key = os.getenv("SEMANTIC_SCHOLAR_API_KEY")
     
-    if not openai_key:
-        print("❌ OPENAI_API_KEY missing!")
+    if not sambanova_key:
+        print("❌ SAMBANOVA_API_KEY missing!")
     else:
-        print(f"✅ OPENAI_API_KEY found ({openai_key[:5]}...)")
+        print(f"✅ SAMBANOVA_API_KEY found ({sambanova_key[:5]}...)")
 
     if not sem_key:
         print("⚠️ SEMANTIC_SCHOLAR_API_KEY missing! (Using Public API - slower)")
@@ -141,10 +141,14 @@ def check_startup():
     # Check Model Access
     try:
         # We don't invoke it, just instantiate to check if package works
-        llm = ChatOpenAI(model="gpt-4o-mini")
-        print("✅ OpenAI gpt-4o-mini initialized successfully")
+        llm = ChatOpenAI(
+            model="Meta-Llama-3.1-8B-Instruct",
+            api_key=sambanova_key,
+            base_url="https://api.sambanova.ai/v1"
+        )
+        print("✅ SambaNova API initialized successfully")
     except Exception as e:
-        print(f"❌ Error initializing OpenAI model: {e}")
+        print(f"❌ Error initializing SambaNova model: {e}")
 
 if __name__ == "__main__":
     check_startup()

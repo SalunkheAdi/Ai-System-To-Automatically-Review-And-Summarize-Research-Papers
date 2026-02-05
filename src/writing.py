@@ -4,21 +4,18 @@ from langchain_core.output_parsers import StrOutputParser
 
 def write_review_section(section_name: str, synthesis: str, context: str = "") -> str:
     """
-    Generates a specific section of the review (e.g., Abstract, Methodology, Results) based on the synthesis.
+    Generates a specific section of the review.
     """
     llm = get_llm(temperature=0.3)
     
-    LIMIT_INSTRUCTION = ""
-    if "Abstract" in section_name:
-        LIMIT_INSTRUCTION = " (Keep it under 100 words)"
-
     prompt = ChatPromptTemplate.from_messages([
-        ("system", f"You are writing the {section_name} section of a systematic review."),
-        ("user", f"Based on the following synthesis of research papers, write a professional {{section_name}}{LIMIT_INSTRUCTION}.\n\nSynthesis:\n{{synthesis}}\n\n{{context}}")
+        ("system", f"Write {section_name}. Max 100 words."),
+        ("user", "{content}")
     ])
     
     try:
-        formatted_prompt = prompt.invoke({"section_name": section_name, "synthesis": synthesis, "context": context})
+        short_synthesis = synthesis[:800]
+        formatted_prompt = prompt.invoke({"content": short_synthesis})
         response = llm.invoke(formatted_prompt)
         return response.content
     except Exception as e:

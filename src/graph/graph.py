@@ -67,6 +67,9 @@ def extraction_node(state: ResearchState):
     print("--- EXTRACTING TEXT (PARALLEL) ---")
     papers = state.get('papers', [])
     
+    # Limit to first 3 papers only for speed
+    papers = papers[:3]
+    
     # Use concurrent processing
     extracted_papers = process_papers_concurrently(papers)
             
@@ -118,9 +121,7 @@ def revision_node(state: ResearchState):
     return {"final_review": revised}
 
 def should_continue(state: ResearchState):
-    # Simple logic: Revise at most once for this prototype
-    if state.get('revision_count', 0) < 1:
-        return "revise"
+    # Skip revision for speed - just end
     return "end"
 
 # Build Graph
